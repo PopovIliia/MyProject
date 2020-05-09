@@ -1,0 +1,291 @@
+--1—
+Select st.name,st.surname,h.name
+From students st
+inner join students_hobbies sh
+ON st.id=sh.student_id
+inner join hobbies h
+on sh.hobby_id=h.id
+where st.id=sh.student_id
+
+
+--2—
+with tab as(
+select sh.student_id, extract (month from age (now(), sh.date_start)) as maximum
+from students_hobbies sh
+where sh.date_finish is null
+group by sh.student_id, sh.date_start
+order by maximum desc
+limit 1)
+select st.*
+from students st
+inner join tab
+on st.id = tab.student_id
+
+--3—
+select st.name, st.surname, st.score, avg(st.score), sum(h.risk)
+from students st
+inner join students_hobbies sh
+on st.id=sh.student_id
+inner join hobbies h
+on h.id = sh.hobby_id
+group by st.name, st.surname, st.score
+having sum(h.risk)>0.9 and st.score>(select avg(score) from students)
+
+--4—
+select st.name, st.surname, st.id, st.birth_date, h.name, (extract (month from age (sh.date_finish, sh.date_start))+extract (year from age (sh.date_finish, sh.date_start))*12) as dlitel
+from students st
+inner join students_hobbies sh
+on st.id=sh.student_id
+inner join hobbies h
+on h.id = sh.hobby_id
+where sh.date_finish is not null
+group by st.name, st.surname, st.id, st.birth_date, h.name, dlitel
+
+--5—
+select st.name, st.surname, st.id, st.birth_date
+from students st
+inner join students_hobbies sh
+on st.id=sh.student_id
+inner join hobbies h
+on h.id = sh.hobby_id
+where (sh.date_finish is null) and (extract (year from st.birth_date ) > 1999)
+group by st.name, st.surname, st.id, st.birth_date
+having count(*) > 1
+
+
+--6
+with new_table as
+(select sh.student_id
+from students_hobbies sh
+where sh.date_finish is null
+Group by sh.student_id
+Having count(*)>=1)
+
+select avg(st.score),st.n_group
+from students st
+inner join new_table nt
+on st.id=nt.student_id
+Group by st.n_group
+
+--7
+select h.name, h.risk, extract(month from age(sh.date_finish,sh.date_start))+extract(year from age(sh.date_finish,sh.date_start))*12,st.n_group,
+from students_hobbies sh
+inner join students st
+on sh.student_id=st.id
+inner join hobbies h
+on sh.hobby_id=h.id
+Group by h.name, h.risk, extract(month from age(sh.date_finish,sh.date_start))+extract(year from age(sh.date_finish,sh.date_start))*12,st.n_group,
+Having extract(month from age(sh.date_finish,sh.date_start))+extract(year from age(sh.date_finish,sh.date_start))*12=
+(
+select max(extract(month from age(sh.date_finish,sh.date_start))+extract(year from age(sh.date_finish,sh.date_start))*12)
+from students_hobbies sh
+)
+
+--10
+with t as
+(
+select st.n_group,max(st.score) as m
+from students st
+Group by st.n_group
+)
+select st.*
+from students st
+inner join t
+on st.n_group=t.n_group
+and st.score=t.m
+
+
+--11
+select t1.n_group
+from
+(select st.n_group, count(st.*) as A
+from students st
+group by st.n_group) as t1
+inner join
+(select st.n_group, count(st.*) as B
+from students st
+where st.score>=4
+group by st.n_group) as t2
+on t1.n_group=t2.n_group
+where t2.B::real/t1.A::real>=0.6;
+
+--12
+select count(h.name), st.n_group
+from students st inner join students_hobbies sh on st.id = sh.student_id inner join hobbies h on sh.hobby_id = h.id
+where sh.date_finish is null
+group by st.n_group;
+
+--16
+
+with h_c as(
+select sh.hobby_id, count(*)as c
+from students_hobbies sh
+Group by sh.hobby_id
+)
+Select h_c.hobby_id
+from h_c
+where h_c.c=
+(
+select max(c)
+from h_c
+)
+--17
+
+select st.*
+from students st
+Inner join students_hobbies sh on st.id = sh.student_id
+where sh.hooby_id = (select h.id
+from students_hobbies sh
+Inner join hobbies h on sh.hobby_id = h.id
+Group by h.id
+Order by count(sh.student_id) desc
+limit 1)
+
+--18
+select sh.hobby_id
+from students_hobbies sh
+inner join hobbies h on sh.hobby_id = h.id
+group by sh.hobby_id, h.risk
+order b
+ 
+y h.risk desc
+limit 3
+
+--19
+create or replace view time as
+(select (extract (month
+ 
+from age (now()::date, sh.date_start))+
+extract (year from age (now()::date, sh.date_start))*12) as q
+from students_hobbies sh)
+
+select st.name, st.surname
+from students st
+inner join students_hobbies sh on st.id = sh.student_id
+order by (q) desc
+limit 10
+
+--21
+create view qqq as (
+SELECT
+st.name, st.surname, st.id
+FROM
+students st
+ORDER BY
+st.score desc)
+
+--22
+/*
+SELECT
+substr(st.n_group::varchar,1,1) as grade
+FROM
+students st
+inner join
+students_hobbies sh on st.id=sh.student_id
+GROUP BY grade, h.name, maxforcourse as(
+Select ch.course, max(c) as max_c
+From chobbies ch
+Group by ch.course
+)
+*/
+
+With chobbies as (
+Select substr(st.n_group::varchar, 1, 1) as course, sh.hobby_id, count(*) as c
+From students st
+Inner join students_hobbies sh on st.id = sh.student_id
+Group by course, sh.hobby_id
+), maxforcourse as (
+Select ch.course, max(c) as max_c
+From chobbies ch
+Group by ch.course
+)
+Select ch.course, ch.hobby_id
+From chobbies ch
+Inner join maxforcourse mfc on ch.course = mfc.course and ch.c = mfc.max_c
+
+
+--23
+Select h.risk as mostpopula, h.name
+From students st
+Inner join students_hobbies sh on st.id = sh.student_id
+Inner join hobbies h on sh.hobby_id = h.id
+Where st.n_group::varchar like '2%'
+Order by risk desc
+Limit 1
+
+--24
+
+Select
+substr(st.n_group::varchar, 1, 1) as course,
+count(*) as kol,
+(select count (*) as b
+from
+(select st.score
+from students st
+where st.score = 5) v )
+as best
+from
+students st
+group by course
+
+--25 Представление: самое популярное хобби среди всех студентов
+select h.name, count(sh.id) as count_hobbies
+from hobbies h
+inner join students_hobbies sh on sh.hobby_id=h.id
+group by h.name
+order by count(sh.id) desc
+limit 1
+
+--27 Для каждой буквы алфавита из имени найти максимальный, средний и минимальный балл.
+— Вывести на экран тех, максимальный балл которых больше 3.6
+select substr(st.name, 1, 1) as letter,
+max(st.score) as maximum,
+avg(st.score) as average,
+min(st.score) as minimum
+from students st
+group by letter
+having max(st.score) > 3.6
+order by substr(st.name, 1, 1)
+
+--28
+select substr(st.n_group::varchar, 1, 1) as grade,
+st.surname,
+max(st.score) as maximum,
+avg(st.score) as average,
+min(st.score) as minimum
+from students st
+group by grade, st.surname
+order by st.surname
+
+--29 Для каждого года рождения подсчитать количество хобби, которыми занимаются или занимались студенты.
+select substr(st.birth_date::varchar,1,4) as year_of_birth, count (sh.hobby_id) as count_h
+from students st
+inner join students_hobbies sh on sh.student_id = st.id
+inner join hobbies h on h.id = sh.hobby_id
+group by year_of_birth
+
+--30 Для каждой буквы алфавита в имени найти максимальный и минимальный риск хобби
+select substr(st.name, 1, 1) as letter,
+max(h.risk) as maximum,
+min(h.risk) as minimum
+from students st
+inner join students_hobbies sh on sh.student_id = st.id
+inner join hobbies h on h.id = sh.hobby_id
+group by letter
+order by letter
+
+--31 Для каждого месяца из даты рождения вывести средний балл студентов, которые занимаются хобби с названием «Футбол»
+select substr(st.birth_date::varchar,6,2) as month_birth,
+avg(st.score) as score
+from students st
+inner join students_hobbies sh on sh.student_id = st.id
+inner join hobbies h on h.id = sh.hobby_id
+group by month_birth, score, h.name
+having h.name = 'Футбол'
+
+--32 Вывести информацию о студентах, которые занимались или занимаются хотя бы 1 хобби в следующем формате: Имя: Иван, фамилия: Иванов, группа: 1234
+select st.name as Имя, st.surname as Фамилия, st.n_group as Номер_Группы
+from students st
+inner join students_hobbies sh on sh.student_id = st.id
+where (sh.date_start) is not null
+group by st.name, st.surname, st.n_group

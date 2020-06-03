@@ -1,4 +1,4 @@
-BEGIN
+BEGIN;
 
 CREATE TABLE shop (
    id serial PRIMARY KEY,
@@ -9,12 +9,12 @@ CREATE TABLE shop (
    coordinate_y integer,
    date_open date,
    date_close date
-)
+);
 
 CREATE TABLE department (
     id serial PRIMARY KEY,
     name varchar(255)
-)
+);
 
 CREATE TABLE division (
     id serial PRIMARY KEY,
@@ -22,7 +22,7 @@ CREATE TABLE division (
     description varchar(255),
     date_start date,
     department_id integer REFERENCES department
-)
+);
 
 CREATE TABLE employee (
     id serial PRIMARY KEY,
@@ -31,37 +31,37 @@ CREATE TABLE employee (
     second_name varchar(255),
     shop_id integer REFERENCES shop,
     division_id integer REFERENCES division,
-    birth_date data,
+    birth_date date,
     date_start date,
     date_finish date
-)
+);
 
 CREATE TABLE schedule (
     start_time varchar(255),
     finish_time varchar(255),
     working_day varchar(255),
     employee_id integer REFERENCES employee
-)
+);
 
 CREATE TABLE supplier (
     id serial PRIMARY KEY,
     name varchar(255),
     adress varchar(255),
     email varchar(255),
-    number varchar(255),
-)
+    number varchar(255)
+);
 
 CREATE TABLE product (
 id serial PRIMARY KEY,
 name varchar(255) NOT NULL UNIQUE
-)
+);
 
 CREATE TABLE property (
 id serial PRIMARY KEY,
 product_id integer REFERENCES product,
 category varchar(255),
 description varchar(255)
-)
+);
 
 CREATE TABLE supply (
     id serial PRIMARY KEY,
@@ -71,7 +71,7 @@ CREATE TABLE supply (
     product_id integer REFERENCES product,
     price integer,
     amount integer
-)
+);
 
 CREATE TABLE shop_product (
     id serial PRIMARY KEY,
@@ -79,7 +79,7 @@ CREATE TABLE shop_product (
     product_id integer REFERENCES product,
     price integer,
     amount integer
-)
+);
 
 CREATE TABLE client (
     id serial PRIMARY KEY,
@@ -87,63 +87,62 @@ CREATE TABLE client (
     surname varchar(255),
     second_name varchar(255),
     email varchar(255),
-    number varchar(255),
-)
+    number varchar(255)
+);
 
 CREATE TABLE buy (
     id serial PRIMARY KEY,
     client_id integer REFERENCES client,
-    shop_product_id ineger REFERENCES shop_product,
+    shop_product_id integer REFERENCES shop_product,
     date_buy date
-)
+);
 
 CREATE TABLE discount (
     id serial PRIMARY KEY,
     client_id integer REFERENCES client,
     product_id integer REFERENCES product,
     date_start date,
-    date_finish date
+    date_finish date,
     discount_price integer
-)
+);
 
 
 CREATE TABLE price_history (
     id serial PRIMARY KEY,
-    shop_product_id ineger REFERENCES shop_product,
+    shop_product_id integer REFERENCES shop_product,
     old_price integer,
     new_price integer,
     date_change date
-)
+);
 
 CREATE TABLE warehouse (
     id serial PRIMARY KEY,
-    product_id ineger REFERENCES product,
+    product_id integer REFERENCES product,
     amount integer
-)
+);
 
-INSERT INTO shop(name, city, street, house_number, coordinate_x, coordinate_x, date_open, date_close) 
+INSERT INTO shop(city, street, house_number, coordinate_x, coordinate_y, date_open, date_close) 
 VALUES
-('Hackett, Jast and Trantow', 'Onieton', 'Ima Avenue','155', 35, 25, 'Mon Apr 06 2020 17:03:22 GMT+0300 (GMT+03:00)', 'Fri May 29 2020 15:37:27 GMT+0300 (GMT+03:00)'),
-('Hills and Sons', 'West Rollinborough', 'Colten Unions','35', 40, 66, 'Tue Mar 17 2020 20:40:47 GMT+0300 (GMT+03:00)', 'Fri May 29 2020 01:35:56 GMT+0300 (GMT+03:00)'),   
-('Boehm Inc', 'Raynorport', 'Cornelius Gateway','109', 1, 53, 'Mon Apr 27 2020 21:42:05 GMT+0300 (GMT+03:00)', 'Fri May 29 2020 15:01:19 GMT+0300 (GMT+03:00)'),
-('Rodriguez - Rice', 'Pollichmouth', 'Gladys Coves','114', 35, 16, 'Mon Mar 02 2020 08:00:42 GMT+0300 (GMT+03:00)', 'Fri May 29 2020 02:46:37 GMT+0300 (GMT+03:00)'),       
-('Collins, Wolff and Boyer', 'Port Brigittemouth', 'Amira Ford','80', 96, 42, 'Fri Feb 21 2020 13:39:39 GMT+0300 (GMT+03:00)', 'Fri May 29 2020 18:09:12 GMT+0300 (GMT+03:00)'),
-('Doyle LLC', 'Collierberg', 'Klocko Harbors','39', 84, 13, 'Thu Mar 19 2020 22:50:09 GMT+0300 (GMT+03:00)', 'Fri May 29 2020 01:59:14 GMT+0300 (GMT+03:00)'),
-('Cummings - Gibson', 'North Donavonstad', 'Susanna Meadow','44', 54, 41, 'Fri May 01 2020 16:24:10 GMT+0300 (GMT+03:00)', 'Thu May 28 2020 22:10:39 GMT+0300 (GMT+03:00)'),
-('Macejkovic - Armstrong', 'Vandervortstad', 'Xander Village','81', 43, 95, 'Tue Mar 17 2020 07:36:32 GMT+0300 (GMT+03:00)', 'Fri May 29 2020 15:15:08 GMT+0300 (GMT+03:00)'),
-('Runolfsson - Purdy', 'East Drakeside', 'Ledner Cove','28', 56, 63, 'Mon Apr 27 2020 01:45:07 GMT+0300 (GMT+03:00)', 'Fri May 29 2020 14:05:50 GMT+0300 (GMT+03:00)'),     
-('Kub, Heidenreich and Schulist', 'Lake Hailee', 'Kenyon Pike','59', 47, 60, 'Tue Apr 28 2020 00:09:31 GMT+0300 (GMT+03:00)', 'Fri May 29 2020 04:18:03 GMT+0300 (GMT+03:00)'),
-('Altenwerth Group', 'North Jeniferburgh', 'Gia Fort','158', 78, 61, 'Thu Mar 19 2020 01:18:23 GMT+0300 (GMT+03:00)', 'Fri May 29 2020 16:07:54 GMT+0300 (GMT+03:00)'),     
-('Keebler - Dietrich', 'Lake Freemanport', 'Summer Fall','31', 63, 96, 'Thu Mar 26 2020 09:09:58 GMT+0300 (GMT+03:00)', 'Fri May 29 2020 10:17:45 GMT+0300 (GMT+03:00)'),   
-('Johnson, Auer and Schinner', 'North Abdiel', 'Kuhic Walk','108', 62, 4, 'Thu Apr 16 2020 02:02:43 GMT+0300 (GMT+03:00)', 'Fri May 29 2020 20:15:02 GMT+0300 (GMT+03:00)'),
-('Goodwin, Yundt and Kihn', 'South Cheyenne', 'Jaiden Lake','191', 100, 34, 'Thu Mar 19 2020 03:33:25 GMT+0300 (GMT+03:00)', 'Fri  29 2020 00:34:24 GMT+0300 (GMT+03:00)'),
-('Aufderhar, Hirthe and Sipes', 'Flatleyborough', 'Brycen Trail','180', 34, 70, 'Mon Apr 20 2020 19:13:14 GMT+0300 (GMT+03:00)', 'Fri Nov 29 2020 12:43:32 GMT+0300 (GMT+03:00)');
+('Elseside', 'Feest Isle','8', 12, 80, '2020-06-30T04:01:12.978Z', '2022-06-02T03:32:41.978Z'),
+('Virginiastad', 'Nienow Mount','178', 12, 39, '2020-06-27T07:14:53.246Z', '2021-07-01T23:29:52.034Z'),
+('North Luciennechester', 'Cassin Bridge','138', 72, 74, '2020-06-11T09:59:03.420Z', '2020-12-01T15:37:56.473Z'),
+('East Koreybury', 'Onie Tunnel','170', 40, 4, '2020-05-26T03:39:40.739Z', '2022-06-01T13:01:35.870Z'),
+('South Jamel', 'Cruickshank Islands','76', 81, 3, '2020-02-24T07:46:10.197Z', '2021-06-01T15:42:05.247Z'),
+('Lake Emory', 'Lourdes Oval','124', 22, 43, '2020-02-23T19:57:30.111Z', '2021-06-01T15:20:42.371Z'),
+('Osinskibury', 'Mosciski Mount','122', 46, 59, '2020-04-26T22:48:40.412Z', '2021-04-01T16:18:54.403Z'),
+('Hammeston', 'Rolfson Creek','53', 60, 78, '2020-03-05T18:45:12.774Z', '2021-08-02T06:51:09.858Z'),
+('Daveport', 'Spinka Grove','131', 39, 88, '2020-04-26T11:09:41.439Z', '2021-06-02T03:54:05.780Z'),
+('Huelsshire', 'Brian Place','71', 25, 12, '2020-04-17T09:17:55.886Z', '2020-10-01T23:25:08.911Z'),
+('Erynside', 'Kulas River','114', 22, 19, '2020-03-26T23:06:24.384Z', '2020-11-02T08:49:20.147Z'),
+('Fordchester', 'Lang Orchard','45', 92, 81, '2020-05-27T13:36:11.055Z', '2022-06-02T05:43:25.116Z'),
+('Hettingerstad', 'Weber Skyway','166', 33, 72, '2020-04-03T18:02:05.867Z', '2021-07-02T00:01:41.785Z'),
+('Lanefort', 'Greenfelder Branch','84', 58, 57, '2020-06-26T01:33:35.270Z', '2021-04-02T03:16:50.458Z');
 
 INSERT INTO department(name) 
 VALUES
-('Marketing'),('Finance'),('Management'),('Logistics'),('Security')
+('Marketing'),('Finance'),('Management'),('Logistics'),('Security');
 
-INSERT INTO divison(name, discription, date_start, department_id) 
+INSERT INTO division(name, description, date_start, department_id) 
 VALUES
 ('Industrial', 'Minus rem dolore.', '2019-10-16T07:07:38.423Z',3),
 ('Home', 'Aut praesentium neque.', '2020-01-15T19:12:41.754Z',4),
@@ -159,12 +158,12 @@ VALUES
 
 INSERT INTO employee(name, surname, second_name, shop_id, division_id, birth_date, date_start, date_finish) 
 VALUES
-('Wilford', 'Weimann', 'Hildegard',15, 2, '2009-06-01T16:54:48.770Z', '2019-01-19T09:09:57.941Z', '2020-11-15T04:20:34.217Z'),
+('Wilford', 'Weimann', 'Hildegard',14, 2, '2009-06-01T16:54:48.770Z', '2019-01-19T09:09:57.941Z', '2020-11-15T04:20:34.217Z'),
 ('Rahsaan', 'Cormier', 'Justice',11, 8, '1995-11-19T04:50:32.269Z', '2020-04-08T16:51:00.841Z', '2021-03-27T18:31:14.170Z'),
 ('Clark', 'Carter', 'Doyle',13, 10, '1998-01-10T01:25:29.044Z', '2020-05-04T02:56:41.626Z', '2021-04-12T03:03:10.254Z'),
-('Letha', 'Lockman', 'William',15, 1, '1991-01-16T10:51:42.929Z', '2019-03-09T07:19:57.595Z', '2020-12-30T21:50:50.189Z'),
+('Letha', 'Lockman', 'William',14, 1, '1991-01-16T10:51:42.929Z', '2019-03-09T07:19:57.595Z', '2020-12-30T21:50:50.189Z'),
 ('Scarlett', 'Bergnaum', 'Caesar',13, 3, '2011-07-06T09:05:08.290Z', '2018-08-09T18:17:16.965Z', '2020-12-17T11:55:38.205Z'),
-('Jeff', 'Kuvalis', 'Martin',15, 9, '2005-09-15T21:10:17.851Z', '2019-04-11T22:59:06.417Z', '2021-05-05T13:14:25.906Z'),
+('Jeff', 'Kuvalis', 'Martin',7, 9, '2005-09-15T21:10:17.851Z', '2019-04-11T22:59:06.417Z', '2021-05-05T13:14:25.906Z'),
 ('Elias', 'Robel', 'Clarissa',10, 4, '1991-09-01T17:52:35.611Z', '2018-07-20T19:30:16.394Z', '2020-09-17T06:37:40.150Z'),
 ('Mossie', 'Ferry', 'Austen',9, 7, '2000-09-07T00:17:19.298Z', '2019-02-11T21:09:36.016Z', '2021-04-27T15:51:34.034Z'),
 ('Elnora', 'Homenick', 'Concepcion',2, 6, '2008-07-25T06:11:04.408Z', '2020-05-05T15:31:09.266Z', '2020-09-04T04:27:35.623Z'),
@@ -213,23 +212,23 @@ VALUES
 ('Car'),
 ('Mouse'),
 ('Shoes'),
-('Car'),
+('Card'),
 ('Pants'),
 ('Keyboard'),
 ('Chicken'),
 ('Chips'),
 ('Sausages'),
-('Pants'),
+('Meat'),
 ('Cheese'),
 ('Pizza'),
 ('Shirt'),
-('Keyboard'),
+('Key'),
 ('Bike'),
-('Hat'),
+('Jacket'),
 ('Gloves'),
-('Hat')
+('Hat');
 
-INSERT INTO property (product_id, category, discription) 
+INSERT INTO property (product_id, category, description) 
 VALUES
 (6,'Concrete','Intelligent'),
 (20,'Soft','Licensed'),
@@ -268,7 +267,7 @@ VALUES
 (12, 13, 10, 11, 235, 92),
 (14, 5, 10, 13, 275, 26),
 (8, 13, 8, 5, 138, 87),
-(8, 15, 9, 10, 352, 81),
+(8, 12, 9, 10, 352, 81),
 (6, 8, 10, 14, 242, 28),
 (14, 2, 5, 18, 197, 47),
 (7, 7, 4, 5, 411, 86),
@@ -282,7 +281,7 @@ VALUES
 (4, 4, 685, 79),
 (12, 15, 490, 40),
 (7, 20, 798, 54),
-(15, 9, 341, 91),
+(5, 9, 341, 91),
 (14, 6, 326, 62),
 (2, 15, 408, 94),
 (10, 8, 204, 43),
@@ -398,4 +397,4 @@ VALUES
 (4, 55),
 (10, 59);
 
-COMMIT
+COMMIT;
